@@ -48,12 +48,9 @@ function App() {
   const [approve, setApprove] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
 
-  console.log(positionName);
   const handleFileChange = (event) => {
     setSelectedFile(event.target.files[0].name);
   };
-
-  console.log(selectedFile);
 
   const getApprove = () => {
     setApprove(!approve);
@@ -83,25 +80,28 @@ function App() {
 
   const filterEducation = educationLine
     .filter((obj) => {
-      return Object.values(obj).some((value) => value !== "");
-    })
-    .map((obj) => {
-      return Object.entries(obj).reduce((acc, [key, value]) => {
-        acc[key] = value !== "" ? value : null;
-        return acc;
-      }, {});
-    });
+    return Object.values(obj).some((value) => value !== "");
+  })
+  .map((obj) => {
+    const newObj = {};
+    for (let [key, value] of Object.entries(obj)) {
+      if (value !== "") {
+        newObj[key] = value;
+      } else {
+        newObj[key] = null;
+      }
+    }
+    return newObj;
+  });
 
-  console.log(filterEducation);
 
   const deleteEducationLine = (index) => {
     const NewEducationLine = [...educationLine];
     NewEducationLine.splice(index, 1);
     setEducationLine(NewEducationLine);
-    console.log(index);
   };
 
-  const setEduLine = (value, index, key) => {
+  const fillEducate = (value, index, key) => {
     const NewEducationLine = [...educationLine];
     NewEducationLine[index][key] = value;
     setEducationLine(NewEducationLine);
@@ -137,9 +137,10 @@ function App() {
     }, 1000); 
   };
 
+
   return (
     <main className="flex flex-col font-[300] text-sm ">
-      <form onSubmit={(e) => saveFromData(e)} className="mx-[100px] mt-24">
+      <div className="mx-[100px] mt-24">
         <h1 className=" text-[24px]">ใบสมัครงาน (Page 2)</h1>
         <div>
           <div className="flex mt-6 items-center">
@@ -150,7 +151,7 @@ function App() {
                 className="w-56 border-[1px] py-1 px-2 ml-5 border-black"
                 onChange={(e) => setPositionName(e.target.value)}
               >
-                <option value="">[POSITION_NAME]</option>
+                <option value={null}>[POSITION_NAME]</option>
                 <option value="Programer">Programer</option>
                 <option value="Engineer">Engineer</option>
                 <option value="IT Support">IT Support</option>
@@ -273,7 +274,7 @@ function App() {
                   className="w-full px-2 border-[1px] border-black"
                   placeholder="[EDUCATION_LEVEL]"
                   onChange={(e) =>
-                    setEduLine(e.target.value, index, "edulevel")
+                    fillEducate(e.target.value, index, "edulevel")
                   }
                   value={item.edulevel}
                 />
@@ -284,7 +285,7 @@ function App() {
                   className="w-full text-sm px-2 border-[1px] border-black"
                   placeholder="[INSTITUTION]"
                   onChange={(e) =>
-                    setEduLine(e.target.value, index, "institution")
+                    fillEducate(e.target.value, index, "institution")
                   }
                   value={item.institution}
                 />
@@ -295,7 +296,7 @@ function App() {
                   className="w-full px-2 border-[1px] border-black"
                   placeholder="[QUALIFICATION]"
                   onChange={(e) =>
-                    setEduLine(e.target.value, index, "qualificate")
+                    fillEducate(e.target.value, index, "qualificate")
                   }
                   value={item.qualificate}
                 />
@@ -305,7 +306,7 @@ function App() {
                   type="text"
                   className="w-full px-2 border-[1px] border-black"
                   placeholder="[FIELD_OF_STUDY]"
-                  onChange={(e) => setEduLine(e.target.value, index, "field")}
+                  onChange={(e) => fillEducate(e.target.value, index, "field")}
                   value={item.field}
                 />
               </div>
@@ -314,7 +315,7 @@ function App() {
                   type="text"
                   className="w-full px-2 border-[1px] border-black"
                   placeholder="[GPA]"
-                  onChange={(e) => setEduLine(e.target.value, index, "gpa")}
+                  onChange={(e) => fillEducate(e.target.value, index, "gpa")}
                   value={item.gpa}
                 />
               </div>
@@ -342,13 +343,14 @@ function App() {
           <div className="flex justify-end">
             <button
               type="submit"
+              onClick={saveFromData}
               className=" border-[1px] border-black rounded-sm  bg-gradient-to-t from-[#dadada] to-[#ffff] py-1 px-12 active:bg-gradient-to-t active:from-[#dadada] active:to-[#dadada] "
             >
               บันทึก
             </button>
           </div>
         </div>
-      </form>
+      </div>
     </main>
   );
 }
